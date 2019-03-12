@@ -3,8 +3,8 @@ using System;
 namespace DataModel
 {
     [Serializable]
-    public class Gold : Data
-    {
-        
+    public class Gold : Dto
+    { 
+        public float Value;
     }
 }

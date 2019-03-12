@@ -1,4 +1,5 @@
-﻿using Network;
+﻿using System;
+using Network;
 using UnityEngine;
 
 namespace SceneObjects
@@ -8,9 +9,15 @@ namespace SceneObjects
         [SerializeField]
         private NetworkConfig networkConfig;
 
+        public static Action ApplicationQuit;
         void Start()
         {
             NetworkProvider.Init(networkConfig);
+        }
+
+        private void OnApplicationQuit()
+        {
+            ApplicationQuit?.Invoke();
         }
     }
 }

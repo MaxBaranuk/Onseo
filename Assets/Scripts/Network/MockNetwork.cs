@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Server;
 using UnityEngine;
 
@@ -6,9 +7,9 @@ namespace Network
 {
     public class MockNetwork : INetwork
     {
-        public MockNetwork()
+        public MockNetwork(NetworkConfig config)
         {
-            ServerProvider.StartMockServer();
+            ServerProvider.StartMockServer(config);
         }
 
         public async Task<ValueOrError<T>> Post<T>(string uri, T data)
@@ -17,7 +18,7 @@ namespace Network
                 return ValueOrError<T>.CreateFromError("Empty Uri");
             
             var json = JsonUtility.ToJson(data);       
-            var res = await ServerProvider.ServerRequest(RequestType.Post, json);
+            var res = await ServerProvider.ServerRequest(uri, RequestType.Post, json);
             
             return res.IsError 
                 ? ValueOrError<T>.CreateFromError(res.ErrorMessage)
@@ -29,12 +30,12 @@ namespace Network
             if (string.IsNullOrEmpty(uri))
                 return ValueOrError<T>.CreateFromError("Empty Uri");
             
-            var res = await ServerProvider.ServerRequest(RequestType.Get);
+            var res = await ServerProvider.ServerRequest(uri, RequestType.Get);
 
             if (res.IsError)
                 return ValueOrError<T>.CreateFromError(res.ErrorMessage);
-                        
-            var model = JsonUtility.FromJson<T>(res.Value);
+
+            var model = JsonConvert.DeserializeObject<T>(res.Value);
             
             return ValueOrError<T>.CreateFromValue(model);
         }

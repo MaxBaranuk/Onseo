@@ -5,16 +5,18 @@ namespace Server
 {
     public static class ServerProvider
     {
-        public static void StartMockServer()
+        private static LocalServer _server;
+        public static void StartMockServer(NetworkConfig config)
         {
-            
+            _server = new LocalServer(config);
         }
 
-        public static async Task<ValueOrError<string>> ServerRequest(RequestType type, string data = null)
-        {
-            await Task.Delay(1000);
-            return ValueOrError<string>.CreateFromValue("");
-        }
+        public static Task<ValueOrError<string>> ServerRequest(string uri, RequestType type, string data = null)
+        { 
+            return type == RequestType.Post
+                ? _server.Post(uri, data)
+                : _server.Get(uri);
+        }  
     }
 
     public enum RequestType

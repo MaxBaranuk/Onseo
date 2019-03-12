@@ -10,17 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 102027dd738b474e81a8eddc861c73e4, type: 3}
-  m_Name: Mock Api config
+  m_Name: "MockApi\u0421onfig"
   m_EditorClassIdentifier: 
   networkType: 0
-  Data:
-  - dataType: Gold
-    endpoint: gold
-  - dataType: Metal
-    endpoint: metal
-  - dataType: Wood
-    endpoint: wood
-  - dataType: Food
-    endpoint: food
-  - dataType: Credentials
-    endpoint: login
+  foodEndpoint: 
+  goldEndpoint: 
+  metalEndpoint: 
+  woodEndpoint: 
+  loginEndpoint: 

@@ -1,7 +1,7 @@
 namespace DataModel
 {
-    public class Wood : Data
+    public class Wood : Dto
     {
-        
+        public float Value;
     }
 }

@@ -1,7 +1,7 @@
 namespace DataModel
 {
-    public class Food : Data
+    public class Food : Dto
     {
-        
+        public float Value;
     }
 }
