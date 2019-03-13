@@ -47,6 +47,9 @@ namespace Server
 
         private ValueOrError<string> RequestGetExecutor(string api, string id)
         {
+            if (Random.value < 0.1f)  // simulate some unexpected error 
+                return ValueOrError<string>.CreateFromError("Network error"); 
+            
             if (api.Equals(config.foodEndpoint))
                 return DataBaseProvider.GetResource(ResourceType.Food, id);
             if (api.Equals(config.goldEndpoint))
@@ -63,6 +66,9 @@ namespace Server
 
         private ValueOrError<string> RequestPostExecutor(string api, string data)
         {
+            if (Random.value < 0.1f)  // simulate some unexpected error 
+                return ValueOrError<string>.CreateFromError("Network error"); 
+            
             if (api.Equals(config.loginEndpoint))
                 return ValueOrError<string>.CreateFromValue(DataBaseProvider.Login(data));
             if (api.Equals(config.createUserEndpoint))

@@ -19,6 +19,7 @@ namespace Network
             var json =  JsonConvert.SerializeObject(data);       
             var res = await ServerProvider.ServerRequest(uri, RequestType.Post, json);
             
+            data = JsonConvert.DeserializeObject<T>(res.Value);
             return res.IsError 
                 ? ValueOrError<T>.CreateFromError(res.ErrorMessage)
                 : ValueOrError<T>.CreateFromValue(data);

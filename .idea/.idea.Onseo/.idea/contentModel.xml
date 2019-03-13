@@ -22,12 +22,18 @@
             <e p="ValueOrError.cs" t="Include" />
           </e>
           <e p="SceneObjects" t="Include">
+            <e p="CreateUserController.cs" t="Include" />
+            <e p="LoginController.cs" t="Include" />
+            <e p="MainPanelController.cs" t="Include" />
+            <e p="ResourceController.cs" t="Include" />
             <e p="SceneController.cs" t="Include" />
+            <e p="UiController.cs" t="Include" />
           </e>
           <e p="Server" t="Include">
             <e p="DataBaseProvider.cs" t="Include" />
             <e p="LocalServer.cs" t="Include" />
             <e p="PlayerData.cs" t="Include" />
+            <e p="RankUser.cs" t="Include" />
             <e p="ServerProvider.cs" t="Include" />
             <e p="UsersRanking.cs" t="Include" />
           </e>

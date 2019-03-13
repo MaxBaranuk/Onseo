@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: "MockApi\u0421onfig"
   m_EditorClassIdentifier: 
   networkType: 0
-  foodEndpoint: 
-  goldEndpoint: 
-  metalEndpoint: 
-  woodEndpoint: 
-  loginEndpoint: 
-  createUserEndpoint: 
-  rankingEndpoint: 
+  foodEndpoint: food
+  goldEndpoint: gold
+  metalEndpoint: metal
+  woodEndpoint: wood
+  loginEndpoint: login
+  createUserEndpoint: create
+  rankingEndpoint: rank
   ranking: {fileID: 11400000, guid: eaf7cd77f948ddf4bba48a3af2782f18, type: 2}

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DataModel;
 using Network;
 using Newtonsoft.Json;
@@ -33,14 +32,13 @@ namespace Server
                     return ValueOrError<string>.CreateFromError("Invalid request");
             }
 
-            res.userId = playerData.Login;
+            res.userId = id;
             return ValueOrError<string>.CreateFromValue(JsonConvert.SerializeObject(res));
         }
 
-        public static string GetRanking(List<PlayerData> players)
-        {
-            var rank = players.Select(data => (data.Login, data.GetRank())).ToList();      
-            return JsonConvert.SerializeObject(rank);
+        public static string GetRanking(List<RankUser> players)
+        {   
+            return JsonConvert.SerializeObject(players);
         }
 
         public static string CreateUser(string data)
@@ -53,8 +51,16 @@ namespace Server
             }
 
             credentials.Status = Status.Ok;
+            
             var json = JsonConvert.SerializeObject(credentials);
-            PlayerPrefs.SetString(credentials.userId, json);
+            
+            var playerData = new PlayerData()
+            {
+                password = credentials.Password
+            };
+
+            var dataJson = JsonConvert.SerializeObject(playerData);
+            PlayerPrefs.SetString(credentials.userId, dataJson);
             return json;
         }
         
@@ -68,21 +74,21 @@ namespace Server
             }
 
             var usedDataJson = PlayerPrefs.GetString(credentials.userId);
-            var usedData = JsonConvert.DeserializeObject<Credentials>(usedDataJson);
+            var usedData = JsonConvert.DeserializeObject<PlayerData>(usedDataJson);
 
-            if (usedData.Status == Status.LogOut)
+            if (credentials.Status == Status.LogOut)
             {
-                LogInUsers.Remove(usedData.userId);
-                usedData.Status = Status.Ok;
-                return JsonConvert.SerializeObject(usedData);
+                LogInUsers.Remove(credentials.userId);
+                credentials.Status = Status.Ok;
+                return JsonConvert.SerializeObject(credentials);
             }
             
-            var allowAccess = usedData.userId.Equals(credentials.userId);
-            usedData.Status = allowAccess ? Status.Ok : Status.IncorrectPassword;
+            var allowAccess = credentials.Password.Equals(usedData.password);
+            credentials.Status = allowAccess ? Status.Ok : Status.IncorrectPassword;
             
             if (allowAccess)
-                LogInUsers.Add(usedData.userId);
-            return JsonConvert.SerializeObject(usedData);
+                LogInUsers.Add(credentials.userId);
+            return JsonConvert.SerializeObject(credentials);
         }
 
         public static void GenerateResources()
