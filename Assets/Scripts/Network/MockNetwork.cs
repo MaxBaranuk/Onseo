@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Server;
-using UnityEngine;
 
 namespace Network
 {
@@ -17,7 +16,7 @@ namespace Network
             if (string.IsNullOrEmpty(uri))
                 return ValueOrError<T>.CreateFromError("Empty Uri");
             
-            var json = JsonUtility.ToJson(data);       
+            var json =  JsonConvert.SerializeObject(data);       
             var res = await ServerProvider.ServerRequest(uri, RequestType.Post, json);
             
             return res.IsError 

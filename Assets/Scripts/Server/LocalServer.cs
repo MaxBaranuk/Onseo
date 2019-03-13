@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using DataModel;
 using Network;
 using SceneObjects;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace Server
 {
     public class LocalServer
     {
-        private NetworkConfig config;
+        private readonly NetworkConfig config;
         private bool isRunning;
         public LocalServer(NetworkConfig config)
         {
@@ -19,9 +20,7 @@ namespace Server
         public async Task<ValueOrError<string>> Post(string uri, string data)
         {
             await Task.Delay(500);
-            PlayerPrefs.SetString(uri, data);
-            PlayerPrefs.Save();
-            return ValueOrError<string>.CreateFromValue(data);
+            return RequestPostExecutor(uri, data);
         }
         
         public async Task<ValueOrError<string>> Get(string uri)
@@ -32,17 +31,7 @@ namespace Server
             var api = segments[0];
             var id = segments[1];
 
-            if (api.Equals(config.foodEndpoint))
-                return ValueOrError<string>.CreateFromValue(DataBaseProvider.GetFood(id));
-            if (api.Equals(config.goldEndpoint))
-                return ValueOrError<string>.CreateFromValue(DataBaseProvider.GetGold(id));
-            if (api.Equals(config.woodEndpoint))
-                return ValueOrError<string>.CreateFromValue(DataBaseProvider.GetWood(id));
-            if (api.Equals(config.metalEndpoint))
-                return ValueOrError<string>.CreateFromValue(DataBaseProvider.GetMetal(id));
-
-            return ValueOrError<string>.CreateFromError("Invalid request");
-
+            return RequestGetExecutor(api, id);
         } 
 
         private async void StartServer()
@@ -51,17 +40,37 @@ namespace Server
 
             while (isRunning)
             {
-                await Task.Delay(5000);
-                GenerateResources();
+                await Task.Delay(1000);
+                DataBaseProvider.GenerateResources();
             }
         }
 
-        private void GenerateResources()
+        private ValueOrError<string> RequestGetExecutor(string api, string id)
         {
-//            var foodJson = Get(config.foodEndpoint);
-//            var food = JsonUtility.FromJson<Food>(foodJson);
+            if (api.Equals(config.foodEndpoint))
+                return DataBaseProvider.GetResource(ResourceType.Food, id);
+            if (api.Equals(config.goldEndpoint))
+                return DataBaseProvider.GetResource(ResourceType.Gold, id);
+            if (api.Equals(config.woodEndpoint))
+                return DataBaseProvider.GetResource(ResourceType.Wood, id);
+            if (api.Equals(config.metalEndpoint))
+                return DataBaseProvider.GetResource(ResourceType.Metal, id);
+            if (api.Equals(config.rankingEndpoint))
+                return ValueOrError<string>.CreateFromValue(DataBaseProvider.GetRanking(config.ranking.players));
+                  
+            return ValueOrError<string>.CreateFromError("Invalid request");
         }
-        
+
+        private ValueOrError<string> RequestPostExecutor(string api, string data)
+        {
+            if (api.Equals(config.loginEndpoint))
+                return ValueOrError<string>.CreateFromValue(DataBaseProvider.Login(data));
+            if (api.Equals(config.createUserEndpoint))
+                return ValueOrError<string>.CreateFromValue(DataBaseProvider.CreateUser(data));
+            
+            return ValueOrError<string>.CreateFromError("Invalid request");
+        }
+
         private void StopServer()
         {
             isRunning = false;
