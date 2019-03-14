@@ -9,10 +9,13 @@ namespace Server
     public class LocalServer
     {
         private readonly NetworkConfig config;
+        private readonly IDatabase database;
         private bool isRunning;
-        public LocalServer(NetworkConfig config)
+        
+        public LocalServer(NetworkConfig config, IDatabase database)
         {
             this.config = config;
+            this.database = database;            
             SceneController.ApplicationQuit += StopServer;
             StartServer();
         }
@@ -26,12 +29,7 @@ namespace Server
         public async Task<ValueOrError<string>> Get(string uri)
         {
             await Task.Delay(500);
-            var segments = uri.Split('/');
-            
-            var api = segments[0];
-            var id = segments[1];
-
-            return RequestGetExecutor(api, id);
+            return RequestGetExecutor(uri);
         } 
 
         private async void StartServer()
@@ -41,38 +39,47 @@ namespace Server
             while (isRunning)
             {
                 await Task.Delay(1000);
-                DataBaseProvider.GenerateResources();
+                database.GenerateResources();
             }
         }
 
-        private ValueOrError<string> RequestGetExecutor(string api, string id)
+        private ValueOrError<string> RequestGetExecutor(string uri)
         {
-            if (Random.value < 0.1f)  // simulate some unexpected error 
-                return ValueOrError<string>.CreateFromError("Network error"); 
+            if (Random.value < 0.05f)  // simulate some unexpected error 
+                return ValueOrError<string>.CreateFromError("Network error");
             
-            if (api.Equals(config.foodEndpoint))
-                return DataBaseProvider.GetResource(ResourceType.Food, id);
-            if (api.Equals(config.goldEndpoint))
-                return DataBaseProvider.GetResource(ResourceType.Gold, id);
-            if (api.Equals(config.woodEndpoint))
-                return DataBaseProvider.GetResource(ResourceType.Wood, id);
-            if (api.Equals(config.metalEndpoint))
-                return DataBaseProvider.GetResource(ResourceType.Metal, id);
-            if (api.Equals(config.rankingEndpoint))
-                return ValueOrError<string>.CreateFromValue(DataBaseProvider.GetRanking(config.ranking.players));
+            var segments = uri.Split('/');
+            if (segments[0].Equals(config.resourceEndpoint))
+            {
+                var id = segments[1];
+                var type = segments[2];
+                if (type == config.foodEndpoint)
+                    return database.GetResource(ResourceType.Food, id);
+                if (type == config.goldEndpoint)
+                    return database.GetResource(ResourceType.Gold, id);
+                if (type == config.woodEndpoint)
+                    return database.GetResource(ResourceType.Wood, id);
+                if (type == config.metalEndpoint)
+                    return database.GetResource(ResourceType.Metal, id);
+                
+                return ValueOrError<string>.CreateFromError("Invalid request");
+            }
+            if (segments[0].Equals(config.rankingEndpoint))
+                return ValueOrError<string>.CreateFromValue(database.GetRanking());
                   
             return ValueOrError<string>.CreateFromError("Invalid request");
         }
 
         private ValueOrError<string> RequestPostExecutor(string api, string data)
         {
-            if (Random.value < 0.1f)  // simulate some unexpected error 
-                return ValueOrError<string>.CreateFromError("Network error"); 
-            
+            if (Random.value < 0.05f)  // simulate some unexpected error 
+                return ValueOrError<string>.CreateFromError("Network error");             
             if (api.Equals(config.loginEndpoint))
-                return ValueOrError<string>.CreateFromValue(DataBaseProvider.Login(data));
+                return database.Login(data);
             if (api.Equals(config.createUserEndpoint))
-                return ValueOrError<string>.CreateFromValue(DataBaseProvider.CreateUser(data));
+                return database.CreateUser(data);
+            if (api.Equals(config.resourceEndpoint))
+                return database.PostResource(data);
             
             return ValueOrError<string>.CreateFromError("Invalid request");
         }
@@ -80,6 +87,7 @@ namespace Server
         private void StopServer()
         {
             isRunning = false;
+            PlayerPrefs.Save();
         }
     }
 }

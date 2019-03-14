@@ -9,6 +9,8 @@ namespace SceneObjects
     public class UiController : MonoBehaviour
     {
         public static UiController Instance;
+        [SerializeField] GameObject mainPanel;
+        [SerializeField] GameObject loginPanel;
         [SerializeField] GameObject loadingBar;
         [SerializeField] Text infoLabel;
         [SerializeField] private InputField loginInput;
@@ -17,14 +19,19 @@ namespace SceneObjects
         [SerializeField] private Button createUserButton;
         [SerializeField] private InputField loginCreateInput;
         [SerializeField] private InputField passwordCreateInput;
-        
+        [SerializeField] private Button logOutButton;
 
+        public string currentUser;
         private void Awake()
         {
             Instance = this;
+            mainPanel.SetActive(false);
+            loginPanel.SetActive(true);
             loginInput.onValueChanged.AddListener(login => loginButton.interactable = !string.IsNullOrEmpty(login));
             loginButton.onClick.AddListener(Login);
             createUserButton.onClick.AddListener(CreateUser);
+            logOutButton.onClick.AddListener(LogOut);
+            
         }
 
         private async void Login()
@@ -43,7 +50,9 @@ namespace SceneObjects
             switch (res.Value.Status)
             {
                 case Status.Ok:
-                    loginButton.transform.parent.gameObject.SetActive(false);
+                    currentUser = res.Value.userId;
+                    loginPanel.SetActive(false);
+                    mainPanel.SetActive(true);                    
                     break;
                 case Status.IncorrectPassword:
                     ShowInfo("Incorrect password");   
@@ -77,6 +86,23 @@ namespace SceneObjects
                     ShowInfo("This name is already used");   
                     break;
             }       
+        }
+
+        private async void LogOut()
+        {
+            LoadingBarEnable(true);
+            var credentials = new Credentials {userId = loginInput.text, Password = passwordInput.text, Status = Status.LogOut};
+            var res = await NetworkProvider.Login(credentials);
+            LoadingBarEnable(false);
+            
+            if (res.IsError)
+            {
+                ShowInfo(res.ErrorMessage);                  
+                return;
+            }
+            
+            loginPanel.SetActive(true);
+            mainPanel.SetActive(false);
         }
 
         public void LoadingBarEnable(bool isEnable)

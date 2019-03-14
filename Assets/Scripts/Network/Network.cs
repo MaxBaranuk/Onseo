@@ -6,6 +6,10 @@ namespace Network
 {
     public class Network : INetwork
     {
+        public Network(NetworkConfig config)
+        {
+        }
+
         public Task<ValueOrError<T>> Post<T>(string uri, T data)
         {
             throw new System.NotImplementedException();

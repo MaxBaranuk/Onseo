@@ -4,11 +4,12 @@ using Server;
 
 namespace Network
 {
-    public class MockNetwork : INetwork
+    public class LocalNetwork : INetwork
     {
-        public MockNetwork(NetworkConfig config)
+        private static LocalServer _server;
+        public LocalNetwork(NetworkConfig config)
         {
-            ServerProvider.StartMockServer(config);
+            _server = new LocalServer(config, new LocalDataBase(config));
         }
 
         public async Task<ValueOrError<T>> Post<T>(string uri, T data)
@@ -17,12 +18,13 @@ namespace Network
                 return ValueOrError<T>.CreateFromError("Empty Uri");
             
             var json =  JsonConvert.SerializeObject(data);       
-            var res = await ServerProvider.ServerRequest(uri, RequestType.Post, json);
+            var res = await _server.Post(uri,json);
+
+            if (res.IsError)
+                return ValueOrError<T>.CreateFromError(res.ErrorMessage);
             
             data = JsonConvert.DeserializeObject<T>(res.Value);
-            return res.IsError 
-                ? ValueOrError<T>.CreateFromError(res.ErrorMessage)
-                : ValueOrError<T>.CreateFromValue(data);
+            return ValueOrError<T>.CreateFromValue(data);
         }
 
         public async Task<ValueOrError<T>> Get<T>(string uri)
@@ -30,7 +32,7 @@ namespace Network
             if (string.IsNullOrEmpty(uri))
                 return ValueOrError<T>.CreateFromError("Empty Uri");
             
-            var res = await ServerProvider.ServerRequest(uri, RequestType.Get);
+            var res = await _server.Get(uri);
 
             if (res.IsError)
                 return ValueOrError<T>.CreateFromError(res.ErrorMessage);

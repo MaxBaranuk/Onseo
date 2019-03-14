@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Ranking
   m_EditorClassIdentifier: 
   players:
-  - food: 0
-    gold: 0
-    metal: 0
-    wood: 0
-  - food: 0
-    gold: 0
-    metal: 0
-    wood: 0
+  - Name: Superman
+    Rank: 200
+  - Name: Batman
+    Rank: 500
+  - Name: Captain America
+    Rank: 1000
+  - Name: Spiderman
+    Rank: 2000
+  - Name: Robin Hood
+    Rank: 5000
