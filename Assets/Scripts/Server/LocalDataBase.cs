@@ -40,14 +40,14 @@ namespace Server
                     return ValueOrError<string>.CreateFromError("Invalid request");
             }
 
-            res.userId = id;
+            res.UserId = id;
             return ValueOrError<string>.CreateFromValue(JsonConvert.SerializeObject(res));
         }
         
         public ValueOrError<string> PostResource(string resourceData)
         {
             var resource = JsonConvert.DeserializeObject<Resource>(resourceData);
-            var json = PlayerPrefs.GetString(resource.userId);
+            var json = PlayerPrefs.GetString(resource.UserId);
             var playerData = JsonConvert.DeserializeObject<PlayerData>(json);
             switch (resource.Type)
             {
@@ -66,7 +66,7 @@ namespace Server
                 default:
                     return ValueOrError<string>.CreateFromError("Invalid request");
             }
-            PlayerPrefs.SetString(resource.userId, JsonConvert.SerializeObject(playerData));
+            PlayerPrefs.SetString(resource.UserId, JsonConvert.SerializeObject(playerData));
             return ValueOrError<string>.CreateFromValue(JsonConvert.SerializeObject(resource));
         }
 
@@ -81,17 +81,17 @@ namespace Server
             {
                 var userDataJson = PlayerPrefs.GetString(id);
                 var userData = JsonConvert.DeserializeObject<PlayerData>(userDataJson);
-                return new RankUser {Name = id, Rank = userData.GetRank()};
+                return new RankUser {name = id, rank = userData.GetRank()};
             }).ToList();
             rankUsers.AddRange(savedUsers);
-            rankUsers.Sort((user, rankUser) =>  user.Rank > rankUser.Rank ? -1 : 1);
+            rankUsers.Sort((user, rankUser) =>  user.rank > rankUser.rank ? -1 : 1);
             return JsonConvert.SerializeObject(rankUsers);
         }
 
         public ValueOrError<string> CreateUser(string data)
         {
             var credentials = JsonConvert.DeserializeObject<Credentials>(data);
-            if (PlayerPrefs.HasKey(credentials.userId))
+            if (PlayerPrefs.HasKey(credentials.UserId))
             {
                 credentials.Status = Status.LogInInUse;
                 return ValueOrError<string>.CreateFromValue(JsonConvert.SerializeObject(credentials));
@@ -101,32 +101,32 @@ namespace Server
             
             var json = JsonConvert.SerializeObject(credentials);
             
-            var playerData = new PlayerData()
+            var playerData = new PlayerData
             {
                 password = credentials.Password
             };
 
             var dataJson = JsonConvert.SerializeObject(playerData);
-            PlayerPrefs.SetString(credentials.userId, dataJson);
-            AddUserId(credentials.userId);
+            PlayerPrefs.SetString(credentials.UserId, dataJson);
+            AddUserId(credentials.UserId);
             return ValueOrError<string>.CreateFromValue(json);
         }
         
         public ValueOrError<string> Login(string data)
         {
             var credentials = JsonConvert.DeserializeObject<Credentials>(data);
-            if (!PlayerPrefs.HasKey(credentials.userId))
+            if (!PlayerPrefs.HasKey(credentials.UserId))
             {
                 credentials.Status = Status.UnknownLogin;
                 return ValueOrError<string>.CreateFromValue(JsonConvert.SerializeObject(credentials));
             }
 
-            var usedDataJson = PlayerPrefs.GetString(credentials.userId);
+            var usedDataJson = PlayerPrefs.GetString(credentials.UserId);
             var usedData = JsonConvert.DeserializeObject<PlayerData>(usedDataJson);
 
             if (credentials.Status == Status.LogOut)
             {
-                logInUsers.Remove(credentials.userId);
+                logInUsers.Remove(credentials.UserId);
                 credentials.Status = Status.Ok;
                 return ValueOrError<string>.CreateFromValue(JsonConvert.SerializeObject(credentials));
             }
@@ -135,7 +135,7 @@ namespace Server
             credentials.Status = allowAccess ? Status.Ok : Status.IncorrectPassword;
             
             if (allowAccess)
-                logInUsers.Add(credentials.userId);
+                logInUsers.Add(credentials.UserId);
             return ValueOrError<string>.CreateFromValue(JsonConvert.SerializeObject(credentials));
         }
 
@@ -148,8 +148,7 @@ namespace Server
                 list = JsonConvert.DeserializeObject<List<string>>(usersJson);
             }
 
-            list.Add(id);
-           
+            list.Add(id);           
             var json = JsonConvert.SerializeObject(list);
             PlayerPrefs.SetString(config.usersEndpoint, json);
         }

@@ -1,4 +1,4 @@
-﻿using Server;
+﻿using DataModel;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,8 +11,8 @@ namespace SceneObjects
         
         public void SetValue(RankUser user)
         {
-            nameField.text = user.Name;
-            valueField.text = user.Rank.ToString();
+            nameField.text = user.name;
+            valueField.text = user.rank.ToString();
         }
     }
 }

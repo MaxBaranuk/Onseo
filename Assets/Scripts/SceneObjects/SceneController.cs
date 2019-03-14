@@ -10,7 +10,8 @@ namespace SceneObjects
         private NetworkConfig networkConfig;
 
         public static Action ApplicationQuit;
-        void Start()
+
+        private void Start()
         {
             NetworkProvider.Init(networkConfig);
         }

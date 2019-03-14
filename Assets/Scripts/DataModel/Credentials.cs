@@ -1,7 +1,8 @@
 namespace DataModel
 {
-    public class Credentials : Dto
+    public class Credentials
     {
+        public string UserId;
         public string Password;
         public Status Status;
     }

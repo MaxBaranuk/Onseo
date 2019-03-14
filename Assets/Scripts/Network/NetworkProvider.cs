@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataModel;
 using SceneObjects;
-using Server;
 
 namespace Network
 {

@@ -34,7 +34,7 @@ namespace SceneObjects
       
             var result = await NetworkProvider.PostResource(new Resource { 
                 Type = type, 
-                userId = UiController.Instance.currentUser, 
+                UserId = UiController.Instance.currentUser, 
                 Value = int.Parse(val)});
 
             if (result.IsError)

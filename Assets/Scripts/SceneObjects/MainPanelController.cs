@@ -15,7 +15,7 @@ namespace SceneObjects
         [SerializeField] private GameObject scorePanel;
         [SerializeField] private GameObject scoreListHolder;
         private ResourceController[] resources;
-        private List<RankUserItem> listItems = new List<RankUserItem>();
+        private readonly List<RankUserItem> listItems = new List<RankUserItem>();
         private bool isRunning;
 
         private void Awake()
@@ -45,7 +45,7 @@ namespace SceneObjects
             }
         }
 
-        async void UpdateResources()
+        private async void UpdateResources()
         {
             UiController.Instance.LoadingBarEnable(true);
             var result = await Task.WhenAll(resources.Select(controller => controller.UpdateState()));
@@ -63,7 +63,7 @@ namespace SceneObjects
             }
         }
 
-        async void ShowRanking()
+        private async void ShowRanking()
         {
             UiController.Instance.LoadingBarEnable(true);
             var userList = await NetworkProvider.GetRanking();
@@ -83,12 +83,11 @@ namespace SceneObjects
             scorePanel.SetActive(true);
         }
 
-        void CloseRanking()
+        private void CloseRanking()
         {
             listItems.ForEach(item => Destroy(item.gameObject));
             listItems.Clear();
             scorePanel.SetActive(false);
         }
-
     }
 }

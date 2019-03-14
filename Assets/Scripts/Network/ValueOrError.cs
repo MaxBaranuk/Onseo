@@ -7,7 +7,7 @@ namespace Network
         public string ErrorMessage => message;
         
         
-        private bool isError;
+        private readonly bool isError;
         private T value;
         private string message;
 

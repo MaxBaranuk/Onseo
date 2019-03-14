@@ -1,7 +1,8 @@
 namespace DataModel
 {
-    public class Resource : Dto
+    public class Resource
     {
+        public string UserId;
         public float Value;
         public ResourceType Type;
     }

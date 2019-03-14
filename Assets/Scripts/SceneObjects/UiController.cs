@@ -37,7 +37,7 @@ namespace SceneObjects
         private async void Login()
         {
             LoadingBarEnable(true);
-            var credentials = new Credentials {userId = loginInput.text, Password = passwordInput.text};
+            var credentials = new Credentials {UserId = loginInput.text, Password = passwordInput.text};
             var res = await NetworkProvider.Login(credentials);
 
             LoadingBarEnable(false);
@@ -50,7 +50,7 @@ namespace SceneObjects
             switch (res.Value.Status)
             {
                 case Status.Ok:
-                    currentUser = res.Value.userId;
+                    currentUser = res.Value.UserId;
                     loginPanel.SetActive(false);
                     mainPanel.SetActive(true);                    
                     break;
@@ -67,7 +67,7 @@ namespace SceneObjects
         {
             LoadingBarEnable(true);
             
-            var credentials = new Credentials {userId = loginCreateInput.text, Password = passwordCreateInput.text};
+            var credentials = new Credentials {UserId = loginCreateInput.text, Password = passwordCreateInput.text};
             var res = await NetworkProvider.CreateUser(credentials);
             LoadingBarEnable(false);
             
@@ -91,7 +91,7 @@ namespace SceneObjects
         private async void LogOut()
         {
             LoadingBarEnable(true);
-            var credentials = new Credentials {userId = loginInput.text, Password = passwordInput.text, Status = Status.LogOut};
+            var credentials = new Credentials {UserId = loginInput.text, Password = passwordInput.text, Status = Status.LogOut};
             var res = await NetworkProvider.Login(credentials);
             LoadingBarEnable(false);
             
